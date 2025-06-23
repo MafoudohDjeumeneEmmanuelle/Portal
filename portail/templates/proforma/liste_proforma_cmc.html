@@ -1,0 +1,70 @@
+{% extends "dashboard/base.html" %}
+{% block title %}📑 Proformas à valider{% endblock %}
+
+{% block content %}
+<h2>📑 Proformas à valider</h2>
+
+<div class="row row-cols-1 g-4">
+  {% for proforma in proformas %}
+    <div class="col">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h5 class="mb-0">Proforma #{{ proforma.id }} - {{ proforma.client.nom_entreprise }}</h5>
+        </div>
+        <div class="card-body">
+
+          {% if proforma.devis and proforma.devis.generated_doc %}
+            <p>
+              <a href="{{ proforma.devis.generated_doc.doc.url }}" target="_blank" class="btn btn-sm btn-outline-secondary">
+                📄 Voir le devis PDF associé
+              </a>
+            </p>
+          {% endif %}
+
+          <h6>Détails des produits :</h6>
+          <table class="table table-sm table-bordered align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>Produit</th>
+                <th>Quantité</th>
+                <th>Unité</th>
+                <th>Prix Unitaire</th>
+                <th>Montant</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for item in proforma.items.all %}
+              <tr>
+                <td>{{ item.designation }}</td>
+                <td>{{ item.quantite }}</td>
+                <td>{{ item.unite }}</td>
+                <td>{{ item.prix_unitaire }} FCFA</td>
+                <td>{{ item.montant }} FCFA</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          <p><strong>Modalités de règlement :</strong> {{ proforma.modalites_reglement }}</p>
+          <p><strong>Condition HT :</strong> {{ proforma.condition_ht|default:"Non spécifiée" }}</p>
+          <p><strong>Montant total HT :</strong> {{ proforma.montant_total_ht|floatformat:0 }} FCFA</p>
+          {% if proforma.tva > 0 %}
+            <p><strong>TVA :</strong> {{ proforma.tva|floatformat:0 }} FCFA</p>
+          {% endif %}
+          <p><strong>Net à payer :</strong> {{ proforma.net_a_payer|floatformat:0 }} FCFA</p>
+
+          <div class="d-flex justify-content-end mt-3">
+            <a href="{% url 'valider_proforma_cmc' proforma.id %}" class="btn btn-success me-2">✅ Valider</a>
+            <a href="{% url 'refuser_proforma_cmc' proforma.id %}" class="btn btn-danger">❌ Refuser</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% empty %}
+    <p class="text-muted">Aucune proforma en attente de validation.</p>
+  {% endfor %}
+</div>
+<div class="d-flex gap-2">
+  <a href="{% url 'chef_dashboard' %}" class="btn btn-secondary">↩️ Retour</a>
+</div> 
+{% endblock %}

@@ -1,0 +1,151 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Tableau de bord Commercial{% endblock %}
+
+{% block content %}
+  <h2>Bienvenue, {{ user.username }} </h2>
+  <p>Voici un aperçu de vos activités commerciales.</p>
+
+  <div class="row g-3">
+    <div class="col-md-2">
+      <a href="{% url 'liste_client' %}" class="text-decoration-none">
+        <div class="card card-custom text-center p-3">
+          <i class="bi bi-people fs-2 text-primary mb-2"></i>
+          <h6>Clients assignés</h6>
+          <p class="fs-4 fw-bold text-primary">{{ clients_count }}</p>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-2">
+      <a href="{% url 'devis_par_client' %}" class="text-decoration-none"> 
+        <div class="card card-custom text-center p-3">
+          <i class="bi bi-file-earmark-text fs-2 text-dark mb-2"></i>
+          <h6>Devis à traiter</h6>
+          <p class="fs-4 fw-bold text-dark">{{ pending_quotes_count }}</p>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-2">
+      <a href="{% url 'liste_quotes' %}" class="text-decoration-none"> 
+        <div class="card card-custom text-center p-3">
+          <i class="bi bi-file-earmark-text fs-2 text-warning mb-2"></i>
+          <h6>Cotations à traiter</h6>
+          <p class="fs-4 fw-bold text-warning">{{ unread_quotes }}</p>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-2">
+      <a href="{% url 'devis_complet' %}" class="text-decoration-none"> 
+        <div class="card card-custom text-center p-3">
+          <i class="bi bi-file-earmark-text fs-2 text-success mb-2"></i>
+          <h6>Retour BE</h6>
+          <p class="fs-4 fw-bold text-success">{{ complete_devis_count}}</p>
+        </div>
+      </a>
+    </div>
+    <div class="col-md-2">
+      <a href="{% url 'liste_commandes' %}" class="text-decoration-none">
+        <div class="card card-custom text-center p-3">
+          <i class="bi bi-cart-check fs-2 text-info mb-2"></i>
+          <h6>Nouvelles commandes</h6>
+          <p class="fs-4 fw-bold text-info">{{ new_orders_count }}</p>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Suivi Proforma -->
+  <div class="row mt-5">
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h6 class="card-title text-muted">Proformas envoyées vs acceptées</h6>
+          <canvas id="proformaChart" height="150"></canvas>
+          <a href="{% url 'liste_devis_et_quotes' %}" class="btn btn-sm btn-outline-primary">Voir toutes les proformas</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h6 class="card-title text-muted">📊 Commandes par client (ce mois)</h6>
+          <canvas id="commandesParClient" height="150"></canvas>
+        </div>
+      </div>
+    </div>
+  </div> 
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const proformaStats = JSON.parse('{{ proforma_stats|safe }}');
+  console.log(proformaStats);  // Debug
+
+  if (proformaStats.length > 0) {
+    const labels = proformaStats.map(item => item.month);
+    const sentData = proformaStats.map(item => item.sent);
+    const acceptedData = proformaStats.map(item => item.accepted);
+
+    const ctx = document.getElementById('proformaChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Proformas envoyées',
+            data: sentData,
+            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+          },
+          {
+            label: 'Proformas acceptées',
+            data: acceptedData,
+            backgroundColor: 'rgba(75, 192, 192, 0.6)',
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  } else {
+    document.getElementById('proformaChart').insertAdjacentHTML('beforebegin', '<p>Aucune donnée disponible.</p>');
+  }
+</script>
+<script>
+  const commandesData = {{ commandes_par_client|safe }};
+  const clientLabels = commandesData.map(item => item["client__nom_entreprise"]);
+  const clientData = commandesData.map(item => item.total);
+
+  new Chart(document.getElementById('commandesParClient'), {
+    type: 'bar',
+    data: {
+      labels: clientLabels,
+      datasets: [{
+        label: 'Nombre de Commandes',
+        data: clientData,
+        backgroundColor: 'rgba(75, 192, 192, 0.6)'
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: 'Commandes par Client (Ce Mois)'
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          precision: 0
+        }
+      }
+    }
+  });
+</script>
+{% endblock %}

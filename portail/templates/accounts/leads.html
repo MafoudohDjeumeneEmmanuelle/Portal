@@ -1,0 +1,203 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Créer un compte client - Multiprint</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+      body {
+        background: #f8f9fa; /* soft grey */
+      }
+      .form-container {
+        max-width: 700px;
+        margin: auto;
+        padding: 2rem;
+        background-color: #fff;
+        border-radius: 20px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      }
+      .input-group-text {
+        width: 3rem;
+        justify-content: center;
+      }
+      .form-label {
+        font-weight: 600;
+        color: #212529; /* text-dark */
+      }
+    </style>
+</head>
+
+<body>
+  {% if messages %}
+  <div class="fixed-message">
+    {% for message in messages %}
+      <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <div class="container py-5">
+    <div class="form-container">
+      <h2 class="text-center mb-4">Demande de création de compte client</h2>
+
+      <form method="POST" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+
+        <!-- Your form fields remain unchanged -->
+        <div class="mb-3">
+          <label class="form-label">Nom de l'entreprise</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-building"></i></span>
+            {{ form.raison_sociale }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Interlocuteur</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-person"></i></span>
+            {{ form.interlocuteur }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Adresse e-mail</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+            {{ form.email }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Pays</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-flag"></i></span>
+            {{ form.pays }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Téléphone</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-telephone"></i></span>
+            {{ form.telephone }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Ville</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+            {{ form.ville }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Rue</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-signpost"></i></span>
+            {{ form.rue }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Boîte postale</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-mailbox"></i></span>
+            {{ form.bp }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Secteur d'activité</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-briefcase"></i></span>
+            {{ form.secteur_activite }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Comment avez-vous connu notre entreprise&nbsp;?</label>
+          <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-question-circle"></i></span>
+            {{ form.origine_client }}
+          </div>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+          <a href="{% url 'login' %}" class="btn btn-secondary">Retour</a>
+          <button type="submit" class="btn btn-danger btn-lg">Envoyer la requête</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script type="text/javascript">
+    setTimeout(function() {
+      const alert = document.querySelector('.fixed-message');
+      if (alert) {
+        alert.style.opacity = '0';
+        alert.style.transition = 'opacity 0.5s ease';
+        setTimeout(() => alert.remove(), 500);
+      }
+    }, 3000);
+  </script>
+
+  <!-- Préfixe téléphone auto -->
+  <script>
+    const countryPrefixes = {
+        'CM': '+237', // Cameroon
+        'FR': '+33',  // France
+        'BE': '+32',  // Belgium
+        'CH': '+41',  // Switzerland
+        'DE': '+49',  // Germany
+        'ES': '+34',  // Spain
+        'IT': '+39',  // Italy
+        'MA': '+212', // Morocco
+        'US': '+1',   // United States
+        'UK': '+44',  // United Kingdom
+        'CN': '+86',  // China
+        'IN': '+91',  // India
+        'NG': '+234', // Nigeria
+        'DZ': '+213', // Algeria
+        'SN': '+221', // Senegal
+        'CI': '+225', // Ivory Coast
+        'GH': '+233', // Ghana
+        'ZA': '+27',  // South Africa
+        'CA': '+1',   // Canada
+        'RU': '+7',   // Russia
+        'BR': '+55',  // Brazil
+        'AU': '+61',  // Australia
+        'JP': '+81',  // Japan
+        'KR': '+82',  // South Korea
+        'EG': '+20',  // Egypt
+        'SA': '+966', // Saudi Arabia
+        'AE': '+971', // United Arab Emirates
+        'TN': '+216', // Tunisia
+        'KE': '+254', // Kenya
+        'TZ': '+255', // Tanzania
+    };
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const countrySelects = document.querySelectorAll('select[name$="pays"]');
+        countrySelects.forEach(select => {
+            select.addEventListener('change', function () {
+                const prefix = countryPrefixes[this.value];
+                if (prefix) {
+                    const form = this.closest('form');
+                    const phoneInput = form.querySelector('input[name$="telephone"]');
+                    if (phoneInput && (phoneInput.value === '' || !phoneInput.value.startsWith('+'))) {
+                        phoneInput.value = prefix + ' ';
+                    }
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

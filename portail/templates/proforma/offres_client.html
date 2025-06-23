@@ -1,0 +1,40 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Offres Client{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">📑 Mes Offres (Proformas)</h2>
+
+<table class="table table-hover table-bordered align-middle">
+  <thead class="table-light">
+    <tr>
+      <th>Type</th>
+      <th>Numéro</th>
+      <th>Date</th>
+      <th>Total HT</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for proforma in all_proformas %}
+    <tr>
+      <td>{{ proforma.produit_type }}</td>
+      <td>#{{ proforma.id }}</td>
+      <td>{{ proforma.date_envoie|date:"d/m/Y" }}</td>
+      <td>{{ proforma.montant_total_ht }} FCFA</td>
+      <td>
+        <a href="{% url 'detail_proforma_client' proforma.id %}" class="btn btn-sm btn-outline-primary">
+          🔎 Détail
+        </a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="5" class="text-center text-muted">Aucune offre disponible.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+<div class="d-flex gap-2">
+  <a href="{% url 'client_dashboard' %}" class="btn btn-secondary">↩️ Retour</a>
+</div> 
+{% endblock %}
