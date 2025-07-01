@@ -31,7 +31,7 @@
                         <td>{{ client.pays }},{{ client.ville }},{{ client.rue }}</td>
                         <td>{{ client.type_client }}</td>
                         <td>{{ client.secteur_activite}}</td>
-                        <td>{{ client.date_validation_compte|date:"d/m/Y" }}</td>
+                        <td>{{ client.created_at|date:"d/m/Y" }}</td>
                         <td>{{ client.commercial.nom_commercial }}</td>
                     </tr>
                 {% endfor %}
