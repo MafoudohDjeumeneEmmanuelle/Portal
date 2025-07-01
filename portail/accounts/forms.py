@@ -130,7 +130,7 @@ class ClientRegistrationForm(forms.ModelForm):
         client = super().save(commit=False)
         client.user = user  
         if self.commercial_user:
-            client.commercial = self.commercial_user
+            client.commercial = self.commercial_user.commercial_profile
         if commit:
             client.save()
         return client

@@ -53,18 +53,16 @@ def user_login(request):
     else:
         form = UserLoginForm()
     return render(request, 'accounts/login.html', {'form': form})
-
 @login_required
 def register_client(request):
     if request.method == 'POST':
-        form = ClientRegistrationForm(request.POST,commercial_user=request.user)
+        commercial = request.user
+        form = ClientRegistrationForm(request.POST, commercial_user=commercial)
         if form.is_valid():
             client = form.save()
-            user=client.user.set_unusable_password()
-            user.save()
-            send_activation_email(user, request)
+            send_activation_email(client.user, request)
             messages.success(request, "Le compte client a été créé. Un lien d'activation a été envoyé.")
-            return redirect('commercial_dashboard')  
+            return redirect('commercial_dashboard')
         else:
             messages.error(request, "Veuillez corriger les erreurs.")
     else:
